@@ -1,13 +1,13 @@
 package com.example.testapplication.di
 
-import android.content.Context
+import com.example.testapplication.app.usersview.UsersActivity
 import dagger.Module
 import dagger.Provides
 
 @Module
-class UsersActivityModule(private val context: Context) {
+class UsersActivityModule(private val context: UsersActivity) {
     @Provides
-    fun context(): Context {
+    fun context(): UsersActivity {
         return context
     }
 }
