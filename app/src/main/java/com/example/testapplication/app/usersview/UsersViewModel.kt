@@ -9,6 +9,7 @@ import com.example.testapplication.core.usecase.GetAllUsersUseCase
 import com.example.testapplication.core.usecase.UsersListener
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class UsersViewModel @Inject constructor(
@@ -18,9 +19,12 @@ class UsersViewModel @Inject constructor(
     private val _content = MutableLiveData<List<UserUiModel>>()
     val content: LiveData<List<UserUiModel>> = _content
 
+    private var cachedUserList: List<UserUiModel>? = null
+
     fun action(action: Action) {
-        when(action) {
-            Action.InitContent -> getDataContent()
+        when (action) {
+            is Action.InitContent -> getDataContent()
+            is Action.SearchUser -> filterUserList(action.query)
         }
     }
 
@@ -29,11 +33,20 @@ class UsersViewModel @Inject constructor(
             useCase.execute(
                 object : UsersListener {
                     override fun getUsers(users: List<User>?) {
-                        _content.postValue( mapper.mapUsers(users)
-                        )
+                        cachedUserList = mapper.mapUsers(users)
+                        _content.postValue(cachedUserList)
                     }
                 }
             )
+        }
+    }
+
+    private fun filterUserList(query: String?) {
+        if (query != null) {
+            val tmpCachedUserList = cachedUserList?.filter {
+                it.name.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT))
+            }
+            _content.value = tmpCachedUserList
         }
     }
 }
