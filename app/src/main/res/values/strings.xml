@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TestApplication</string>
     <string name="users_title">Utilisateurs</string>
+    <string name="search_option">search</string>
 </resources>
