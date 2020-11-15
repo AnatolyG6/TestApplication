@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.testapplication.app.userdetail.UserDetailActivity
 import com.example.testapplication.app.usersview.adapter.UserAdapter
 import com.example.testapplication.app.usersview.adapter.UserUiModel
 import com.example.testapplication.databinding.ActivityUsersBinding
@@ -24,7 +25,15 @@ class UsersActivity : AppCompatActivity() {
     private fun getOnClickListener(): UserAdapter.OnItemClickListener {
         return object: UserAdapter.OnItemClickListener {
             override fun onClick(userUiModel: UserUiModel) {
-                TODO("Not yet implemented")
+                startActivity(
+                    UserDetailActivity.createIntent(
+                        this@UsersActivity,
+                        userUiModel.name,
+                        userUiModel.gender,
+                        userUiModel.email,
+                        userUiModel.avatarUrl
+                    )
+                )
             }
         }
     }

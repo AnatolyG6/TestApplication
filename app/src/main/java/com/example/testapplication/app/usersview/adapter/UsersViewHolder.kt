@@ -21,6 +21,9 @@ class UsersViewHolder(val binding: ItemUserBinding) : RecyclerView.ViewHolder(bi
             userGenre.text = userUiModel.gender
             userEmail.text = userUiModel.email
             userAvatar.load(userUiModel.avatarUrl)
+            userContainer.setOnClickListener {
+                listener.onClick(userUiModel)
+            }
         }
     }
 
