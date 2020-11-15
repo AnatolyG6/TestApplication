@@ -14,10 +14,11 @@
         <activity android:name=".app.usersview.UsersActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".app.userdetail.UserDetailActivity"/>
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
