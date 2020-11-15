@@ -2,24 +2,20 @@ package com.example.testapplication.di
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.example.testapplication.BuildConfig
 import com.example.testapplication.data.network.ExampleService
+import com.example.testapplication.data.network.UsersService
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
-import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.io.File
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-open class ServiceModule(private val cacheDirectory: File, private val context: Context) {
+open class ServiceModule(private val context: Context) {
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -27,6 +23,12 @@ open class ServiceModule(private val cacheDirectory: File, private val context: 
     @Singleton
     internal fun provideService(retrofit: Retrofit): ExampleService {
         return retrofit.create(ExampleService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideUsersService(retrofit: Retrofit): UsersService {
+        return retrofit.create(UsersService::class.java)
     }
 
     @Provides
@@ -51,35 +53,17 @@ open class ServiceModule(private val cacheDirectory: File, private val context: 
 
     @Provides
     @Singleton
-    internal fun provideLoggingInterceptor(logger: HttpLoggingInterceptor.Logger): HttpLoggingInterceptor {
-        val interceptor = HttpLoggingInterceptor(logger)
-        if (BuildConfig.DEBUG && LOG_NETWORK) {
-            interceptor.level = networkLogLevel
-        }
-        return interceptor
-    }
-
-    private val networkLogLevel: HttpLoggingInterceptor.Level
-        get() = HttpLoggingInterceptor.Level.valueOf(LOG_NETWORK_LEVEL)
-
-    @Provides
-    @Singleton
     internal fun provideConnectivityManager(): ConnectivityManager {
         return connectivityManager
     }
 
     @Provides
     @Singleton
-    internal fun provideClient(
-        loggingInterceptor: HttpLoggingInterceptor,
-        cache: Cache?
-    ): OkHttpClient {
+    internal fun provideClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
-            .cache(cache)
             .connectTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
             .readTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .addInterceptor(loggingInterceptor)
         return builder.build()
     }
 
@@ -93,23 +77,8 @@ open class ServiceModule(private val cacheDirectory: File, private val context: 
     internal fun provideMoshi(): Moshi = Moshi.Builder().build()
 
 
-    @Provides
-    @Singleton
-    internal fun provideCache(@Named("cacheDir") cacheDirectory: File): Cache? =
-        if (BuildConfig.DEBUG && !ENABLE_CACHE) null
-        else Cache(cacheDirectory, CACHE_SIZE)
-
-    @Provides
-    @Named("cacheDir")
-    @Singleton
-    internal fun provideCacheDirectory(): File = cacheDirectory
-
     companion object {
-        private val BASE_URL = "https//:www.some-site.com"
-        private val LOG_NETWORK = false
+        private val BASE_URL = "http://server.lunabee.studio:11111/techtest/"
         private val TIMEOUT = 10
-        private val LOG_NETWORK_LEVEL = "NONE"
-        private val CACHE_SIZE = 10L
-        private val ENABLE_CACHE = true
     }
 }
